@@ -1,0 +1,132 @@
+- id: '1720541560183'
+  alias: Bambu printing started
+  description: ''
+  trigger:
+  - platform: device
+    device_id: f0ab603ac201f7b2de1ce28070699b19
+    domain: bambu_lab
+    type: event_print_started
+  condition: []
+  action:
+  - service: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      device_id: 993bf1cc8b523722894d9d612eb7c1ff
+  mode: single
+- id: '1720541662041'
+  alias: Bambu printing finished
+  description: ''
+  trigger:
+  - platform: device
+    device_id: f0ab603ac201f7b2de1ce28070699b19
+    domain: bambu_lab
+    type: event_print_finished
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 993bf1cc8b523722894d9d612eb7c1ff
+    entity_id: 75a9cb0d4b3c69e70c1a5289c4c32b4c
+    domain: switch
+  mode: single
+- id: '1720541835898'
+  alias: Bambu printing error
+  description: ''
+  trigger:
+  - platform: device
+    device_id: f0ab603ac201f7b2de1ce28070699b19
+    domain: bambu_lab
+    type: event_printer_error
+  condition: []
+  action:
+  - service: notify.mobile_app_myphone
+    metadata: {}
+    data:
+      message: Bambu printer error detected
+  mode: single
+- id: '1720541952406'
+  alias: Bambu printing failed
+  description: ''
+  trigger:
+  - platform: device
+    device_id: f0ab603ac201f7b2de1ce28070699b19
+    domain: bambu_lab
+    type: event_print_failed
+  condition: []
+  action:
+  - service: notify.mobile_app_myphone
+    metadata: {}
+    data:
+      message: Bambu printer failed
+  mode: single
+- id: '1721840793321'
+  alias: Lightning detector
+  description: Lightning detector
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.blitzortung_lightning_counter
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.blitzortung_lightning_counter
+    above: 0
+  action:
+  - service: logbook.log
+    metadata: {}
+    data:
+      name: Lightning
+      entity_id: sensor.blitzortung_lightning_counter
+      message: Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance')
+        | int / 1.609) | round (1, 'floor')}} Miles of our home.
+  mode: single
+- id: '1723082723877'
+  alias: Joel toothbrush recharge
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.io_series_8_9_a15d
+    from: running
+    to: idle
+  condition:
+  - type: is_battery_level
+    condition: device
+    device_id: b4b7e74a01cded3ea182d2f877c5d8fd
+    entity_id: 5c9239a1298ec858730de75f82c31c7c
+    domain: sensor
+    below: 20
+  action:
+  - action: notify.mobile_app_myphone
+    metadata: {}
+    data:
+      message: Battery needs to be recharged!
+      title: Joel’s Toothbrush
+  mode: single
+- id: '1723083199403'
+  alias: Erika toothbrush recharge
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.io_series_4_4669
+    from: running
+    to: idle
+  condition:
+  - type: is_battery_level
+    condition: device
+    device_id: fcb266f4dbf4fba1260019c292466daa
+    entity_id: a9a72da4089c4f4c82cd0d1435e948a4
+    domain: sensor
+    below: 20
+  action:
+  - action: notify.mobile_app_myphone
+    metadata: {}
+    data:
+      message: Erika’s toothbrush needs to be recharged!
+      title: Toothbrush
+  - action: notify.mobile_app_admins_iphone
+    metadata: {}
+    data:
+      title: Erika’s Toothbrush
+      message: Your toothbrush needs to be recharged!
+  mode: single
