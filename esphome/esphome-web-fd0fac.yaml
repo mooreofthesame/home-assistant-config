@@ -1,0 +1,296 @@
+esphome:
+  name: esp-s3-box
+  friendly_name: ESP S3 Box
+
+esp32:
+  board: esp32s3box
+  framework:
+    type: arduino
+#    version: latest # might be required, possibly update esphome version instead
+
+external_components:
+  - source: github://pr#4793
+    components: [ tt21100 ]
+  - source: github://pr#4861
+    components: [ es8311 ]
+  - source: github://rpatel3001/esphome@es7210
+    components: [ es7210 ]
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+
+ota:
+api:
+web_server:
+  port: 80
+
+bluetooth_proxy:
+  active: true
+
+logger:
+  # CDC logging is currently not working on the S3
+  # See https://github.com/espressif/esp-idf/commit/9924d9f27192a5fab5f66230c72249ecc6cad34c
+  #hardware_uart: USB_CDC
+  level: VERBOSE
+  logs:
+    esp32_ble: WARN
+    esp32_ble_tracker: WARN
+    ble_dist: WARN
+    sensor: WARN
+    ledc.output: WARN
+    component: WARN
+    ili9xxx: WARN
+    tt21100: WARN
+    touchscreen: WARN
+    wifi: WARN
+    es8311: WARN
+    i2s_audio: VERBOSE
+    voice_assistant: VERBOSE
+    es7210: WARN
+
+time:
+  - platform: homeassistant
+    id: time_ha
+
+
+
+output:
+  - platform: ledc
+    pin: GPIO45
+    id: lcd_backlight_pin
+
+light:
+  - platform: monochromatic
+    output: lcd_backlight_pin
+    id: lcd_backlight
+    name: "LCD Backlight"
+    restore_mode: ALWAYS_ON
+
+spi:
+  clk_pin: GPIO7
+  mosi_pin: GPIO6
+
+display:
+  - platform: ili9xxx
+    model: s3box
+    cs_pin: GPIO5
+    dc_pin: GPIO4
+    reset_pin: GPIO48
+    id: lcd
+    auto_clear_enabled: false
+    # Width = 320, Height = 240
+    lambda: |-
+      auto bg = Color(250, 250, 250);
+      auto text = Color(250, 250, 250);
+      auto border_color = Color(60, 60, 60);
+      auto button_bg_on = Color(36, 180, 245);
+      auto button_bg_off = Color(158, 158, 158);
+      auto red = Color(255, 0, 0);
+      auto green = Color(0, 255, 0);
+      auto blue = Color(0, 0, 255);
+
+#      it.image(0,0, id(background_image), ImageAlign::TOP_LEFT);
+      it.strftime(160, 65, id(font_large), text, TextAlign::CENTER, "%I:%M", id(time_ha).now());
+      it.strftime(160, 115, id(font_medium), text, TextAlign::CENTER, "%a, %b %e", id(time_ha).now());
+
+
+      int circleY = 187;
+      int circleX1 = 53, circleX2 = 160, circleX3 = 267;
+      int circleRadius = 40;
+
+      
+      it.filled_circle(circleX1, circleY, circleRadius+2, text);
+      it.filled_circle(circleX2, circleY, circleRadius+2, text);
+      it.filled_circle(circleX3, circleY, circleRadius+2, text);
+
+      if (id(basement_lights).state){
+        it.filled_circle(circleX1, circleY, circleRadius, button_bg_on);
+        it.image(circleX1, circleY, id(ceiling_light_icon), ImageAlign::CENTER);
+      }
+      else{
+        it.filled_circle(circleX1, circleY, circleRadius, button_bg_off);
+        it.image(circleX1, circleY, id(ceiling_light_icon_off), ImageAlign::CENTER);
+      }
+
+      if (id(basement_lamps).state){
+        it.filled_circle(circleX2, circleY, circleRadius, button_bg_on);
+        it.image(circleX2, circleY, id(floor_lamp_icon), ImageAlign::CENTER);
+      }
+      else{
+        it.filled_circle(circleX2, circleY, circleRadius, button_bg_off);
+        it.image(circleX2, circleY, id(floor_lamp_icon_off), ImageAlign::CENTER);
+      }
+
+      if (id(office_lights).state){
+        it.filled_circle(circleX3, circleY, circleRadius, button_bg_on);
+        it.image(circleX3, circleY, id(office_icon), ImageAlign::CENTER);
+      }
+      else{
+        it.filled_circle(circleX3, circleY, circleRadius, button_bg_off);
+        it.image(circleX3, circleY, id(office_icon), ImageAlign::CENTER);
+      }
+
+font:
+  - file: "gfonts://Roboto@500"
+    id: font_large
+    size: 70
+    glyphs: "0123456789:APM."
+  - file: "gfonts://Roboto@500"
+    id: font_medium
+    size: 30
+  - file: "gfonts://Roboto@500"
+    id: font_small
+    size: 15
+
+image:
+  - file: mdi:volume-off
+    id: mute_icon
+    resize: 40x40
+  - file: mdi:microphone-off
+    id: mic_mute_icon
+    resize: 40x40
+  - file: mdi:account-voice
+    id: voice_icon
+    resize: 40x40
+  - file: "esp-s3-box-background.png"
+    id: background_image
+    resize: 320x240
+    type: rgba
+  - file: mdi:floor-lamp
+    id: floor_lamp_icon
+    resize: 40x40
+  - file: mdi:floor-lamp-outline
+    id: floor_lamp_icon_off
+    resize: 40x40
+  - file: mdi:ceiling-light
+    id: ceiling_light_icon
+    resize: 40x40
+  - file: mdi:ceiling-light-outline
+    id: ceiling_light_icon_off
+    resize: 40x40
+  - file: mdi:desk
+    id: office_icon
+    resize: 40x40
+
+i2c:
+  scl: GPIO18
+  sda: GPIO8
+  scan: true
+
+touchscreen:
+  - platform: tt21100
+    address: 0x24
+    interrupt_pin: GPIO3
+    # Don't use as the reset pin is shared with the display, so the ili9xxx will perform the reset
+    #reset_pin: GPIO48
+
+  
+  
+binary_sensor:
+  #- platform: gpio
+    #pin:
+      #number: GPIO0
+      #mode: INPUT_PULLUP
+      #inverted: true
+    #id: side_button
+    #name: "Side Button"
+    #on_press:
+      #- voice_assistant.start:
+    #on_release:
+      #- voice_assistant.stop:
+
+
+  #- platform: gpio
+    #pin:
+      #number: GPIO1
+      #inverted: true
+    #id: microphone_button
+    #name: "Microphone Button"
+
+
+  - platform: touchscreen
+    name: "Basement Lights Button"
+    x_min: 3
+    x_max: 103
+    y_min: 137
+    y_max: 237
+
+
+  - platform: touchscreen
+    name: "Basement Lamps Button"
+    x_min: 110
+    x_max: 210
+    y_min: 137
+    y_max: 237
+        
+  - platform: touchscreen
+    name: "Office Lights Button"
+    x_min: 216
+    x_max: 316
+    y_min: 137
+    y_max: 237
+    
+  - platform: homeassistant
+    id: basement_lights
+    entity_id: light.light_1
+    internal: True
+
+  - platform: homeassistant
+    id: basement_lamps
+    entity_id: light.light_2
+    internal: True
+
+  - platform: homeassistant
+    id: office_lights
+    entity_id: light.nspanel_relay_1
+    internal: True
+
+#i2s_audio:
+#  i2s_lrclk_pin: GPIO47
+  #i2s_bclk_pin: GPIO17
+  #i2s_mclk_pin: GPIO2
+
+#es8311:
+  #address: 0x18
+
+# mutually exclusive with media_player
+#speaker:
+  #- platform: i2s_audio
+    #id: ext_speaker
+    #dac_type: external
+    #i2s_dout_pin: GPIO15
+    #mode: mono
+
+#media_player:
+#  - platform: i2s_audio
+    #name: Media Player
+    #id: ext_speaker
+    #dac_type: external
+    #i2s_dout_pin: GPIO15
+    #mute_pin:
+      #number: GPIO46
+      #inverted: true
+
+#es7210:
+  #address: 0x40
+
+#microphone:
+  #- platform: i2s_audio
+    #id: ext_mic
+    #adc_type: external
+    #pdm: false
+    #i2s_din_pin: GPIO16
+    #bits_per_sample: 16bit
+
+#voice_assistant:
+  #id: voice_asst
+  #microphone: ext_mic
+  #speaker: ext_speaker
+  #media_player: ext_speaker
+
+# i2c device at address 0x18 - ES8311 Audio Codec
+# i2c device at address 0x24 - TT21100 Touchscreen
+# i2c device at address 0x40 - ES7210 Mic ADC
+# i2c device at address 0x68 - ICM-42607-P IMU

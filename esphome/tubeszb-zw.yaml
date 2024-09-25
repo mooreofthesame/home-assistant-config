@@ -1,0 +1,19 @@
+substitutions:
+  name: tubeszb-zw
+packages:
+  tubezb.zw: github://tube0013/tube_gateways/models/current/tubeszb-zw-kit/tubeszb-zw.yaml
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+api:
+  encryption:
+    key: o0f55Z0emTsHQA2EatYRiPDGA+y32lY75qX0HtgsSAI=
+esp32_ble_tracker:
+  scan_parameters:
+    interval: 1100ms
+    window: 1100ms
+    active: true
+bluetooth_proxy:
+  active: true
+ota:
+  platform: esphome
