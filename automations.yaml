@@ -130,3 +130,71 @@
       title: Erika’s Toothbrush
       message: Your toothbrush needs to be recharged!
   mode: single
+- id: '1729267731347'
+  alias: Mazy - reset fed status
+  description: ''
+  triggers:
+  - trigger: time
+    at: '16:00:00'
+  - trigger: time
+    at: 04:00:00
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.mazy_fed
+  mode: single
+- id: '1729267967741'
+  alias: Mazy - not fed yet
+  description: ''
+  triggers:
+  - trigger: time
+    at: 08:30:00
+  - trigger: time
+    at: '21:00:00'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.mazy_fed
+    state: 'off'
+  actions:
+  - action: notify.mobile_app_myphone
+    metadata: {}
+    data:
+      message: Mazy hasn't been fed yet!
+      title: Hungry Dog Alert
+  mode: single
+- id: '1729268304067'
+  alias: Mazy - fed
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.dogfood_container_vibration
+    from:
+    to: 'on'
+  conditions: []
+  actions:
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.mazy_fed
+  mode: single
+- id: '1729268869219'
+  alias: Mazy - last fed time
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.mazy_fed
+    from: 'off'
+    to: 'on'
+  conditions: []
+  actions:
+  - action: input_datetime.set_datetime
+    metadata: {}
+    data:
+      timestamp: '{{ now().timestamp() | timestamp_local }}'
+  mode: single
