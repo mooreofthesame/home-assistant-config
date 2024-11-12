@@ -82,53 +82,59 @@
 - id: '1723082723877'
   alias: Joel toothbrush recharge
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.io_series_8_9_a15d
     from: running
     to: idle
-  condition:
+    trigger: state
+  conditions:
   - type: is_battery_level
     condition: device
     device_id: b4b7e74a01cded3ea182d2f877c5d8fd
     entity_id: 5c9239a1298ec858730de75f82c31c7c
     domain: sensor
     below: 20
-  action:
+  actions:
   - action: notify.mobile_app_myphone
     metadata: {}
     data:
       message: Battery needs to be recharged!
       title: Joel’s Toothbrush
+      data:
+        interruption-level: time-sensitive
   mode: single
 - id: '1723083199403'
   alias: Erika toothbrush recharge
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.io_series_4_4669
     from: running
     to: idle
-  condition:
+    trigger: state
+  conditions:
   - type: is_battery_level
     condition: device
     device_id: fcb266f4dbf4fba1260019c292466daa
     entity_id: a9a72da4089c4f4c82cd0d1435e948a4
     domain: sensor
     below: 20
-  action:
+  actions:
   - action: notify.mobile_app_myphone
     metadata: {}
     data:
       message: Erika’s toothbrush needs to be recharged!
       title: Toothbrush
+      data:
+        interruption-level: time-sensitive
   - action: notify.mobile_app_admins_iphone
     metadata: {}
     data:
       title: Erika’s Toothbrush
       message: Your toothbrush needs to be recharged!
+      data:
+        interruption-level: time-sensitive
   mode: single
 - id: '1729267731347'
   alias: Mazy - reset fed status
