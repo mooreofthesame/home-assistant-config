@@ -204,3 +204,31 @@
     data:
       timestamp: '{{ now().timestamp() | timestamp_local }}'
   mode: single
+- id: '1731726572267'
+  alias: Sunset
+  description: Automation to run at sunset
+  triggers:
+  - trigger: sun
+    event: sunset
+    offset: 0
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: f841fd355af28545dc09c8107127de16
+    entity_id: 003e3c7eab254b1eddd5ac008ef437a6
+    domain: switch
+  mode: single
+- id: '1731726628084'
+  alias: Sunrise
+  description: Automation to run at sunrise
+  triggers:
+  - trigger: sun
+    event: sunrise
+    offset: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: f841fd355af28545dc09c8107127de16
+    entity_id: 003e3c7eab254b1eddd5ac008ef437a6
+    domain: switch
+  mode: single
