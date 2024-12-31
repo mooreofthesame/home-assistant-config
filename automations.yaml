@@ -227,8 +227,31 @@
     offset: 0
   conditions: []
   actions:
-  - type: turn_off
+  - type: turn_on
     device_id: f841fd355af28545dc09c8107127de16
     entity_id: 003e3c7eab254b1eddd5ac008ef437a6
     domain: switch
+  mode: single
+- id: '1735319369520'
+  alias: Zigbee2mqtt status
+  description: ''
+  triggers:
+  - type: not_running
+    device_id: 9935da1a215377ca8698c3c81036e251
+    entity_id: 2a67d6b7f529241ad2fda6e799a3d55c
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  conditions: []
+  actions:
+  - action: notify.mobile_app_myphone
+    metadata: {}
+    data:
+      message: Zigbee2MQTT is not running
+      title: HAOS Status
+      data:
+        interruption-level: time-sensitive
   mode: single
