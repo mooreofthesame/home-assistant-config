@@ -217,6 +217,7 @@
     device_id: f841fd355af28545dc09c8107127de16
     entity_id: 003e3c7eab254b1eddd5ac008ef437a6
     domain: switch
+    enabled: false
   mode: single
 - id: '1731726628084'
   alias: Sunrise
