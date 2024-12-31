@@ -16,3 +16,14 @@
 ip_bans.yaml
 secrets.yaml
 known_devices.yaml
+
+# Additional from https://blog.schembri.me/post/syncing-homeassistant-with-github/
+secrets.yaml
+*.log
+*.xml
+*.db
+*.sqlite
+.storage/
+OZW_Log.txt
+harmony_harmony_hub.conf
+known_devices.yaml
