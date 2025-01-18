@@ -9,3 +9,13 @@ frontend:
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+
+#influx
+influxdb:
+  api_version: 2
+  ssl: false
+  host: 192.168.0.139
+  port: 8086
+  token: fi90lLS0B3PQV9_cq3NjDjeEybxK_ZYckHCwNBRKBgdhU3IFbzMy-0SoGfyE1xTdS-JAL2VrVs-0ouWiagtlNw==
+  organization: d2be80d14f65910b
+  bucket: homeassistant_data
