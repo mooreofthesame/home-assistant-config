@@ -6,6 +6,7 @@
 !.gitignore
 !*.md
 !esphome
+!zigbee2mqtt
 
 # Ignore folders.
 .storage
@@ -27,3 +28,4 @@ secrets.yaml
 OZW_Log.txt
 harmony_harmony_hub.conf
 known_devices.yaml
+zigbee2mqtt/configuration_backup_v1.yaml
