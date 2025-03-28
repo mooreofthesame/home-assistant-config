@@ -21,5 +21,5 @@ influxdb:
   bucket: homeassistant_data
 sensor:
   - platform: splitwise
-    client_id: 'P3bg62zerVaWbUOa6PX4F1813CrOGg77NxANKbYI'
-    client_secret: '6kbShCg42dnbuHsEYN2ZRmGeRcpe7bQGs'
+    client_id: ''
+    client_secret: ''
